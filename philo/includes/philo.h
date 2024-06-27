@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 17:03:11 by malee             #+#    #+#             */
-/*   Updated: 2024/06/27 23:31:17 by malee            ###   ########.fr       */
+/*   Updated: 2024/06/28 00:15:28 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,4 +54,9 @@ t_rules				*ft_init_table(char **args);
 void				ft_error(void);
 size_t				ft_get_time(void);
 
+// routines
+void				ft_think(t_rules *table, t_phil *phil);
+void				ft_eat(t_rules *table, t_phil *phil);
+void				ft_sleep(t_rules *table, t_phil *phil);
+void				ft_print_status(t_rules *table, t_phil *phil, char *status);
 #endif

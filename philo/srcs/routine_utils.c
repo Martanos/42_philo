@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 19:07:32 by malee             #+#    #+#             */
-/*   Updated: 2024/06/27 23:11:45 by malee            ###   ########.fr       */
+/*   Updated: 2024/06/28 00:15:27 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,6 @@ void	ft_sleep(t_rules *table, t_phil *phil)
 void	ft_print_status(t_rules *table, t_phil *phil, char *status)
 {
 	pthread_mutex_lock(&table->is_printing);
-	if (!table->has_dead)
-		printf("%zu %zu %s\n", ft_get_time() - table->start_time, phil->id,
-			status);
+	printf("%zu %zu %s\n", ft_get_time() - table->start_time, phil->id, status);
 	pthread_mutex_unlock(&table->is_printing);
 }

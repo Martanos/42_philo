@@ -6,20 +6,28 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 19:17:16 by malee             #+#    #+#             */
-/*   Updated: 2024/06/27 23:47:26 by malee            ###   ########.fr       */
+/*   Updated: 2024/06/28 00:24:46 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	*ft_phil_routine(t_rules *table)
+void	*ft_phil_routine(void *arg)
 {
-	while (!table->has_dead)
+	t_rules	*table;
+
+	table = (t_rules *)arg;
+	while (!table->simulation_stop)
 	{
-		ft_think(table);
-		ft_eat(table);
-		ft_sleep(table);
+		ft_think(table, table->phils);
+		if (table->simulation_stop)
+			break ;
+		ft_eat(table, table->phils);
+		if (table->simulation_stop)
+			break ;
+		ft_sleep(table, table->phils);
 	}
+	return (NULL);
 }
 
 void	ft_simulation(t_rules *table)
@@ -34,13 +42,13 @@ void	ft_simulation(t_rules *table)
 	while (i <= table->num_of_phils)
 	{
 		phil->last_eaten = table->start_time;
-		pthread_create(&phil->thread, NULL, ft_phil_routine, phil);
-		phil = phil->next_phil;
+		pthread_create(&phil->thread, NULL, ft_phil_routine, table);
+		table->phils = phil->next_phil;
 		i++;
 	}
+	table->phils = phil;
 	pthread_create(&monitor_thread, NULL, ft_monitor, table);
 	i = 1;
-	phil = table->phils;
 	while (i <= table->num_of_phils)
 	{
 		pthread_join(phil->thread, NULL);
@@ -82,7 +90,7 @@ void	*ft_monitor(void *arg)
 		if (ft_check_death(philo, rules))
 			break ;
 		philo = philo->next_phil;
-		usleep(1000); // Sleep for 1ms to reduce CPU usage
+		usleep(1000);
 	}
 	return (NULL);
 }
