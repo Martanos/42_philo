@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 18:01:28 by malee             #+#    #+#             */
-/*   Updated: 2024/06/27 19:04:20 by malee            ###   ########.fr       */
+/*   Updated: 2024/06/28 00:10:42 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ t_rules	*ft_init_table(char **args)
 	t_rules	*table;
 
 	table = calloc(1, sizeof(t_rules));
+	table->num_of_phils = ft_atol(args[0]);
 	table->time_to_die = ft_atol(args[1]);
 	table->time_to_eat = ft_atol(args[2]);
 	table->time_to_sleep = ft_atol(args[3]);
@@ -25,7 +26,8 @@ t_rules	*ft_init_table(char **args)
 	else
 		table->max_meals = -1;
 	pthread_mutex_init(&(table->is_printing), NULL);
-	ft_init_phils(table, ft_atol(args[0]), 1);
+	pthread_mutex_init(&(table->death_check), NULL);
+	ft_init_phils(table, table->num_of_phils, 1);
 	return (table);
 }
 
