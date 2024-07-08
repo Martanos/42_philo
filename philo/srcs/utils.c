@@ -6,17 +6,18 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 17:27:37 by malee             #+#    #+#             */
-/*   Updated: 2024/06/27 22:43:03 by malee            ###   ########.fr       */
+/*   Updated: 2024/07/02 21:42:53 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-size_t	ft_atol(char *str)
+ssize_t	ft_atol(char *str)
 {
-	size_t	result;
+	ssize_t	result;
 
-	if (!*str)
+	result = 0;
+	if (!str)
 		return (-1);
 	while (*str && ((*str == 32) || (*str >= 7 && *str <= 13)))
 		str++;
@@ -41,10 +42,10 @@ int	ft_isdigit(char *str)
 	return (0);
 }
 
-void	*ft_calloc(size_t nmemb, size_t size)
+void	*ft_calloc(ssize_t nmemb, ssize_t size)
 {
 	char	*arr;
-	size_t	n;
+	ssize_t	n;
 
 	arr = malloc(nmemb * size);
 	if (!arr)
@@ -55,11 +56,11 @@ void	*ft_calloc(size_t nmemb, size_t size)
 	return ((void *)arr);
 }
 
-size_t	ft_get_time(void)
+ssize_t	ft_get_time(void)
 {
-	struct timeeval	tv;
+	struct timeval	tv;
 
 	if (gettimeofday(&tv, NULL) == -1)
 		return (0);
-	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+	return ((ssize_t)((tv.tv_sec * 1000) + (tv.tv_sec / 1000)));
 }

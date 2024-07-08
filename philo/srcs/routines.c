@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 19:17:16 by malee             #+#    #+#             */
-/*   Updated: 2024/06/28 00:24:46 by malee            ###   ########.fr       */
+/*   Updated: 2024/07/08 22:47:11 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,83 +14,31 @@
 
 void	*ft_phil_routine(void *arg)
 {
-	t_rules	*table;
+	t_phil	*phil;
 
-	table = (t_rules *)arg;
-	while (!table->simulation_stop)
+	phil = (t_phil *)arg;
+	while (phil->rules->dead_phil == 0)
 	{
-		ft_think(table, table->phils);
-		if (table->simulation_stop)
+		if (phil->rules->max_meals < 0
+			|| phil->meals_eaten <= phil->rules->max_meals)
+			ft_think_eat(phil);
+		if (phil->rules->dead_phil)
 			break ;
-		ft_eat(table, table->phils);
-		if (table->simulation_stop)
+		ft_sleep(phil);
+		if (phil->rules->dead_phil)
 			break ;
-		ft_sleep(table, table->phils);
 	}
-	return (NULL);
 }
 
-void	ft_simulation(t_rules *table)
+void	ft_mise_en_place(t_phil *phils)
 {
-	t_phil		*phil;
-	size_t		i;
-	pthread_t	monitor_thread;
+	t_phil	*current;
 
-	i = 1;
-	phil = table->phils;
-	table->start_time = ft_get_time();
-	while (i <= table->num_of_phils)
+	phils->rules->start_time = ft_get_time();
+	current = phils;
+	while (current->id != phils->rules->num_of_phils)
 	{
-		phil->last_eaten = table->start_time;
-		pthread_create(&phil->thread, NULL, ft_phil_routine, table);
-		table->phils = phil->next_phil;
-		i++;
+		pthread_create(&(current->thread), NULL, ft_phil_routine, current);
+		current = phils->next_phil;
 	}
-	table->phils = phil;
-	pthread_create(&monitor_thread, NULL, ft_monitor, table);
-	i = 1;
-	while (i <= table->num_of_phils)
-	{
-		pthread_join(phil->thread, NULL);
-		phil = phil->next_phil;
-		i++;
-	}
-	pthread_join(monitor_thread, NULL);
-}
-
-int	ft_check_death(t_phil *philo, t_rules *rules)
-{
-	size_t	current_time;
-
-	current_time = ft_get_time();
-	if ((current_time - philo->last_eaten) > rules->time_to_die)
-	{
-		pthread_mutex_lock(&rules->death_check);
-		if (!rules->simulation_stop)
-		{
-			rules->simulation_stop = 1;
-			printf("%zu %zu died\n", current_time - rules->start_time,
-				philo->id);
-		}
-		pthread_mutex_unlock(&rules->death_check);
-		return (1);
-	}
-	return (0);
-}
-
-void	*ft_monitor(void *arg)
-{
-	t_rules	*rules;
-	t_phil	*philo;
-
-	rules = (t_rules *)arg;
-	philo = rules->phils;
-	while (!rules->simulation_stop)
-	{
-		if (ft_check_death(philo, rules))
-			break ;
-		philo = philo->next_phil;
-		usleep(1000);
-	}
-	return (NULL);
 }
