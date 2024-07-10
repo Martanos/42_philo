@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 17:02:59 by malee             #+#    #+#             */
-/*   Updated: 2024/07/10 17:03:57 by malee            ###   ########.fr       */
+/*   Updated: 2024/07/10 17:56:34 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,11 @@
 void	ft_error(void)
 {
 	printf("Error please enter args this way:\n");
-	printf("./philo <num_of_phils> <time_to_die(in ms)> <time_to_eat(in ms)> <time_to_sleep(in ms)> optional:<num_of_times_each_phil_must_eat(in ms)>\n");
-	printf("Arguments must be valid positive integers with no special characters\n");
+	printf("./philo <num_of_phils> <time_to_die(in ms)>\n");
+	printf(" <time_to_eat(in ms)> <time_to_sleep(in ms)>\n");
+	printf("optional:<num_of_times_each_phil_must_eat(in ms)>\n");
+	printf("Arguments must be valid\n");
+	printf("positive integers with no special characters\n");
 	exit(ERROR_CODE);
 }
 

@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 16:33:14 by malee             #+#    #+#             */
-/*   Updated: 2024/07/10 16:33:38 by malee            ###   ########.fr       */
+/*   Updated: 2024/07/10 17:57:09 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ int	ft_get_eat(t_phil *phil)
 	pthread_mutex_unlock(&phil->set_is_eating);
 	return (flag);
 }
+
 ssize_t	ft_get_time_last_eaten(t_phil *phil)
 {
 	ssize_t	time;
@@ -40,7 +41,7 @@ void	ft_set_death(t_phil *phil, int flag)
 
 int	ft_get_death(t_phil *phil)
 {
-	int flag;
+	int	flag;
 
 	pthread_mutex_lock(&phil->rules->set_dead_phil);
 	flag = phil->rules->dead_phil;

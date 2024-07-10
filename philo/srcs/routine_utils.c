@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 19:07:32 by malee             #+#    #+#             */
-/*   Updated: 2024/07/10 16:32:44 by malee            ###   ########.fr       */
+/*   Updated: 2024/07/10 17:57:26 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ void	ft_set_eat(t_phil *phil, int flag)
 	phil->is_eating = flag;
 	pthread_mutex_unlock(&phil->set_is_eating);
 }
+
 void	ft_set_time_last_eaten(t_phil *phil)
 {
 	pthread_mutex_lock(&phil->set_time_last_eaten);
@@ -42,6 +43,7 @@ void	ft_set_meals_eaten(t_phil *phils)
 	phils->meals_eaten++;
 	pthread_mutex_unlock(&phils->set_meals_eaten);
 }
+
 ssize_t	ft_get_meals_eaten(t_phil *phils)
 {
 	ssize_t	meals;
