@@ -1,6 +1,6 @@
 NAME = philo
 INCLUDE_DIR = includes
-CFILES = main.c init_utils.c routine_utils.c routines.c utils.c
+CFILES = main.c init_utils.c routine_utils.c routine_utils2.c routines.c utils.c reaper.c
 SRC_DIR = srcs
 SRCS = $(addprefix $(SRC_DIR)/,$(CFILES))
 CC = cc
@@ -19,22 +19,22 @@ all: $(OBJ_DIR) $(NAME)
 
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
-	echo "$(GREEN) $(NAME) created successfully.$(RESET)"
+	@echo "$(GREEN)$(NAME) created successfully.$(RESET)"
 
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
-	echo "$(GREEN)$(OBJ_DIR) directory created.$(RESET)"
+	@echo "$(GREEN)$(OBJ_DIR) directory created.$(RESET)"
 
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.c
-	$(CC) $(CFLAGS) $(addprefix -I,$(INCLUDE_DIR)) -c $< -o $@
+	@$(CC) $(CFLAGS) $(addprefix -I,$(INCLUDE_DIR)) -c $< -o $@
 
 clean:
 	@rm -rf $(OBJ_DIR)
-	echo "$(GREEN)$(NAME) object files cleaned successfully.$(RESET)"
+	@echo "$(GREEN)$(NAME) object files cleaned successfully.$(RESET)"
 
 fclean: clean
 	@rm -rf $(NAME)
-	echo "$(GREEN)$(NAME) removed successfully.$(RESET)"
+	@echo "$(GREEN)$(NAME) removed successfully.$(RESET)"
 
 re: fclean all
 

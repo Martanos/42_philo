@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 17:02:59 by malee             #+#    #+#             */
-/*   Updated: 2024/07/08 22:28:11 by malee            ###   ########.fr       */
+/*   Updated: 2024/07/10 17:03:57 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,12 @@ void	ft_check_args(char **av)
 	{
 		if (ft_isdigit(*args_to_check))
 			ft_error();
+		else if (ft_atol(*args_to_check) == -1)
+			ft_error();
+		else if (ft_atol(*args_to_check) > SIZE_MAX)
+			ft_error();
 		args_to_check++;
 	}
-	// TODO: add overflow checks
 }
 
 int	main(int ac, char **av)
@@ -45,7 +48,7 @@ int	main(int ac, char **av)
 		ft_check_args(args);
 		phils = ft_init_table(args);
 		ft_mise_en_place(phils);
-		ft_clear_table(phils);
+		ft_clear_tables(phils);
 	}
 	else
 		ft_error();

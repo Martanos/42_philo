@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 22:15:53 by malee             #+#    #+#             */
-/*   Updated: 2024/07/08 22:22:39 by malee            ###   ########.fr       */
+/*   Updated: 2024/07/10 17:44:45 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,48 +15,42 @@
 void	*ft_reaper(void *arg)
 {
 	t_phil	*phil;
-	ssize_t	current_time;
-	ssize_t	time_last_eaten;
-	int		is_eating;
 
 	phil = (t_phil *)arg;
-	while (phil->rules->dead_phil == 0)
+	while (1)
 	{
-		is_eating = ft_get_eat(&phil);
-		current_time = ft_get_time();
-		time_last_eaten = ft_get_time_last_eaten(&phil);
-		if (!is_eating && ((current_time
-					- time_last_eaten) > phil->rules->time_to_die))
+		if (!ft_get_eat(phil) && ((ft_get_time()
+					- ft_get_time_last_eaten(phil)) > phil->rules->time_to_die))
 		{
-			ft_print_status(phil, "has died");
-			ft_set_death(&phil, 1);
+			ft_print_status(phil, "died");
+			ft_set_death(phil, 1);
+			break ;
 		}
 		phil = phil->next_phil;
+		if (phil->rules->max_meals != -1)
+		{
+			if (ft_fullness(phil))
+				break ;
+		}
+		usleep(100);
 	}
+	return (NULL);
 }
 
-int	ft_get_eat(t_phil *phil)
+int	ft_fullness(t_phil *phil)
 {
-	int	flag;
+	t_phil	*current;
+	ssize_t	i;
 
-	pthread_mutex_lock(&phil->set_is_eating);
-	flag = phil->is_eating;
-	pthread_mutex_unlock(&phil->set_is_eating);
-	return (flag);
-}
-ssize_t	ft_get_time_last_eaten(t_phil *phil)
-{
-	ssize_t	time;
-
-	pthread_mutex_lock(&phil->set_time_last_eaten);
-	time = phil->time_last_eaten;
-	pthread_mutex_unlock(&phil->set_time_last_eaten);
-	return (time);
-}
-
-void	ft_set_death(t_phil *phil, int flag)
-{
-	pthread_mutex_lock(&phil->rules->set_dead_phil);
-	phil->rules->dead_phil = flag;
-	pthread_mutex_unlock(&phil->rules->set_dead_phil);
+	i = 0;
+	current = phil;
+	while (i < phil->rules->num_of_phils)
+	{
+		if (current->meals_eaten != phil->rules->max_meals)
+			return (0);
+		current = current->next_phil;
+		i++;
+	}
+	ft_set_death(phil, 1);
+	return (1);
 }
