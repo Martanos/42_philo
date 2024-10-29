@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 17:27:37 by malee             #+#    #+#             */
-/*   Updated: 2024/10/29 19:55:12 by malee            ###   ########.fr       */
+/*   Updated: 2024/10/29 20:50:38 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,13 +65,12 @@ long long	ft_get_time(void)
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
-void	ft_print_status(t_philo *philo, char *status)
+void	ft_print_status(t_philo **philo, char *status)
 {
 	long long	time;
 
-	pthread_mutex_lock(&philo->table->write_mutex);
-	time = ft_get_time() - philo->table->start_time;
-	if (!philo->table->someone_died)
-		printf("%lld %lld %s\n", time, philo->id, status);
-	pthread_mutex_unlock(&philo->table->write_mutex);
+	pthread_mutex_lock(&(*philo)->table->write_mutex);
+	time = ft_get_time() - (*philo)->table->start_time;
+	printf("%lld %lld %s\n", time, (*philo)->id, status);
+	pthread_mutex_unlock(&(*philo)->table->write_mutex);
 }

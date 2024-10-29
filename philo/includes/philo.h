@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 17:03:11 by malee             #+#    #+#             */
-/*   Updated: 2024/10/29 19:56:12 by malee            ###   ########.fr       */
+/*   Updated: 2024/10/29 22:00:09 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ int						ft_start_simulation(t_table **table);
 /* ROUTINES */
 void					*ft_philosopher_routine(void *arg);
 void					ft_reaper_routine(t_table **table);
-void					ft_eat(t_philo **philo);
 
 /* LIBFT UTILS */
 void					*ft_calloc(ssize_t nmemb, ssize_t size);
@@ -68,6 +67,6 @@ int						ft_init_mutexes(t_table **table);
 int						ft_init_philos(t_table **table);
 long long				ft_get_time(void);
 int						ft_check_death(t_philo **philo);
-void					ft_print_status(t_philo *philo, char *status);
+void					ft_print_status(t_philo **philo, char *status);
 
 #endif
