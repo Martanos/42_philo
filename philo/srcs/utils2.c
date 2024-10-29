@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 06:14:33 by malee             #+#    #+#             */
-/*   Updated: 2024/10/30 07:32:53 by malee            ###   ########.fr       */
+/*   Updated: 2024/10/30 07:44:37 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ void	ft_exit(t_table *table)
 {
 	int	i;
 
+	ft_precise_usleep(100);
 	i = -1;
 	while (++i < table->philo_num)
 	{

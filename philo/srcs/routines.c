@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 06:22:34 by malee             #+#    #+#             */
-/*   Updated: 2024/10/30 07:36:12 by malee            ###   ########.fr       */
+/*   Updated: 2024/10/30 07:43:51 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,17 +109,27 @@ int	ft_spawn_threads(t_table *table)
 int	ft_thread_init(t_table *table)
 {
 	int			i;
-	pthread_t	id;
+	pthread_t	monitor_id;
 
 	table->start_time = ft_get_time();
 	if (table->meals_num > 0)
-		if (pthread_create(&id, NULL, &ft_monitor, &table->philos[0]))
+	{
+		if (pthread_create(&monitor_id, NULL, &ft_monitor, &table->philos[0]))
 			return (ft_error(ERR_THREAD_CREATE, table));
-	if (ft_spawn_threads(table) != 0)
-		return (1);
+	}
+	i = -1;
+	while (++i < table->philo_num)
+	{
+		if (pthread_create(&table->thread_id[i], NULL, &ft_routine,
+				&table->philos[i]))
+			return (ft_error(ERR_THREAD_CREATE, table));
+		ft_precise_usleep(1);
+	}
 	i = -1;
 	while (++i < table->philo_num)
 		if (pthread_join(table->thread_id[i], NULL))
 			return (ft_error(ERR_THREAD_JOIN, table));
+	if (table->meals_num > 0)
+		pthread_join(monitor_id, NULL);
 	return (0);
 }

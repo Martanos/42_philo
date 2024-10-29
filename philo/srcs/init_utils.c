@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 18:01:28 by malee             #+#    #+#             */
-/*   Updated: 2024/10/30 07:33:01 by malee            ###   ########.fr       */
+/*   Updated: 2024/10/30 07:48:40 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,21 +29,27 @@ int	ft_init_table(t_table *table)
 int	ft_init_forks(t_table *table)
 {
 	ssize_t	i;
+	size_t	left;
+	size_t	right;
 
-	i = 0;
-	while (i < table->philo_num)
-	{
+	i = -1;
+	while (++i < table->philo_num)
 		pthread_mutex_init(&table->forks[i], NULL);
-		i++;
-	}
 	i = 0;
-	table->philos[0].left_fork = &table->forks[0];
-	table->philos[0].right_fork = &table->forks[table->philo_num - 1];
-	i = 1;
 	while (i < table->philo_num)
 	{
-		table->philos[i].left_fork = &table->forks[i];
-		table->philos[i].right_fork = &table->forks[i - 1];
+		left = i;
+		right = (i + 1) % table->philo_num;
+		if (left < right)
+		{
+			table->philos[i].left_fork = &table->forks[left];
+			table->philos[i].right_fork = &table->forks[right];
+		}
+		else
+		{
+			table->philos[i].left_fork = &table->forks[right];
+			table->philos[i].right_fork = &table->forks[left];
+		}
 		i++;
 	}
 	return (0);
