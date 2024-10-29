@@ -1,6 +1,6 @@
 NAME = philo
 INCLUDE_DIR = includes
-CFILES = main.c init_utils.c routine_utils.c routine_utils2.c routines.c utils.c reaper.c
+CFILES = main.c init_utils.c routines.c utils.c simulation.c
 SRC_DIR = srcs
 SRCS = $(addprefix $(SRC_DIR)/,$(CFILES))
 CC = cc

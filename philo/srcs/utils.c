@@ -6,15 +6,15 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 17:27:37 by malee             #+#    #+#             */
-/*   Updated: 2024/07/10 15:19:41 by malee            ###   ########.fr       */
+/*   Updated: 2024/10/29 19:55:12 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include <philo.h>
 
-ssize_t	ft_atol(char *str)
+long long	ft_atol(char *str)
 {
-	ssize_t	result;
+	long long	result;
 
 	result = 0;
 	if (!str)
@@ -57,11 +57,21 @@ void	*ft_calloc(ssize_t nmemb, ssize_t size)
 	return ((void *)arr);
 }
 
-ssize_t	ft_get_time(void)
+long long	ft_get_time(void)
 {
 	struct timeval	tv;
 
-	if (gettimeofday(&tv, NULL) == -1)
-		return (0);
-	return ((ssize_t)((tv.tv_sec * 1000) + (tv.tv_usec / 1000)));
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+}
+
+void	ft_print_status(t_philo *philo, char *status)
+{
+	long long	time;
+
+	pthread_mutex_lock(&philo->table->write_mutex);
+	time = ft_get_time() - philo->table->start_time;
+	if (!philo->table->someone_died)
+		printf("%lld %lld %s\n", time, philo->id, status);
+	pthread_mutex_unlock(&philo->table->write_mutex);
 }

@@ -6,102 +6,90 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 17:53:58 by malee             #+#    #+#             */
-/*   Updated: 2024/07/10 17:54:06 by malee            ###   ########.fr       */
+/*   Updated: 2024/10/29 19:54:46 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include <philo.h>
 
-void	*ft_phil_routine(void *arg)
+void	*ft_philosopher_routine(void *arg)
 {
-	t_phil	*phil;
+	t_philo	*philo;
+	int		died;
 
-	phil = (t_phil *)arg;
-	while (!ft_get_death(phil))
+	philo = (t_philo *)arg;
+	if (philo->id % 2 == 0)
+		usleep(1000);
+	while (1)
 	{
-		if (phil->rules->max_meals < 0
-			|| phil->meals_eaten <= phil->rules->max_meals)
-			ft_think_eat(phil);
-		usleep(phil->rules->time_to_sleep * 1000 - 16000);
+		pthread_mutex_lock(&philo->table->death_mutex);
+		died = philo->table->someone_died;
+		pthread_mutex_unlock(&philo->table->death_mutex);
+		if (died)
+			break ;
+		ft_eat(&philo);
+		if (philo->table->meals_required > 0
+			&& philo->meals_eaten == philo->table->meals_required)
+			break ;
+		ft_print_status(philo, "is sleeping");
+		usleep(philo->table->time_to_sleep * 1000);
+		ft_print_status(philo, "is thinking");
 	}
 	return (NULL);
 }
 
-void	ft_mise_en_place(t_phil *phils)
+void	ft_eat(t_philo **philo)
 {
-	pthread_t	reaper_thread;
-	ssize_t		i;
-	t_phil		*current;
+	pthread_mutex_lock((*philo)->left_fork);
+	ft_print_status(*philo, "has taken a fork");
+	pthread_mutex_lock((*philo)->right_fork);
+	ft_print_status(*philo, "has taken a fork");
+	ft_print_status(*philo, "is eating");
+	(*philo)->last_meal_time = ft_get_time();
+	(*philo)->meals_eaten++;
+	usleep((*philo)->table->time_to_eat * 1000);
+	pthread_mutex_unlock((*philo)->left_fork);
+	pthread_mutex_unlock((*philo)->right_fork);
+}
 
-	i = 0;
-	current = phils;
-	phils->rules->start_time = ft_get_time();
-	while (++i <= phils->rules->num_of_phils)
+void	ft_reaper_routine(t_table **table)
+{
+	int		i;
+	t_philo	*current;
+
+	while (!(*table)->someone_died)
 	{
-		ft_set_time_last_eaten(current);
-		current->meals_eaten = 0;
-		pthread_create(&(current->thread), NULL, ft_phil_routine, current);
-		current = current->next_phil;
-	}
-	phils->rules->start_time = ft_get_time();
-	pthread_create(&reaper_thread, NULL, ft_reaper, phils);
-	pthread_join(reaper_thread, NULL);
-	i = 0;
-	current = phils;
-	while (++i <= phils->rules->num_of_phils)
-	{
-		pthread_join(current->thread, NULL);
-		current = current->next_phil;
+		i = 0;
+		while (i < (*table)->num_philos)
+		{
+			current = &((*table)->philosophers[i]);
+			if (ft_check_death(&current))
+				return ;
+			if ((*table)->meals_required != -1)
+			{
+				if ((*table)->philosophers[i].meals_eaten < (*table)->meals_required)
+					break ;
+				if (i == (*table)->num_philos - 1)
+					return ;
+			}
+			i++;
+		}
+		usleep(1000);
 	}
 }
 
-void	ft_think_eat(t_phil *phil)
+int	ft_check_death(t_philo **philo)
 {
-	ft_print_status(phil, "is thinking");
-	if (ft_get_meals_eaten(phil) == phil->rules->max_meals
-		&& phil->rules->max_meals != -1)
-	{
-		ft_set_time_last_eaten(phil);
-		return ;
-	}
-	if (ft_fork_order(phil))
-		return ;
-	ft_print_status(phil, "is eating");
-	ft_set_eat(phil, 1);
-	ft_set_time_last_eaten(phil);
-	usleep(phil->rules->time_to_eat * 1000 - 16000);
-	pthread_mutex_unlock(&phil->left_fork);
-	pthread_mutex_unlock(phil->right_fork);
-	if (phil->rules->max_meals > -1)
-		ft_set_meals_eaten(phil);
-	ft_set_eat(phil, 0);
-	ft_print_status(phil, "is sleeping");
-}
+	long long	current_time;
 
-int	ft_fork_order(t_phil *phil)
-{
-	if (phil->rules->num_of_phils == 1)
+	current_time = ft_get_time();
+	if (current_time - (*philo)->last_meal_time > (*philo)->table->time_to_die)
 	{
-		pthread_mutex_lock(&phil->left_fork);
-		ft_print_status(phil, "has taken a fork");
-		pthread_mutex_unlock(&phil->left_fork);
-		usleep(phil->rules->time_to_die * 1000);
-		return (1);
+		pthread_mutex_lock(&(*philo)->table->death_mutex);
+		(*philo)->table->someone_died = 1;
+		pthread_mutex_unlock(&(*philo)->table->death_mutex);
+		ft_print_status(*philo, "died");
+		return (EXIT_FAILURE);
 	}
-	else if (phil->id % 2 == 0)
-	{
-		pthread_mutex_lock(&phil->left_fork);
-		ft_print_status(phil, "has taken a fork");
-		pthread_mutex_lock(phil->right_fork);
-		ft_print_status(phil, "has taken a fork");
-		return (0);
-	}
-	else
-	{
-		pthread_mutex_lock(phil->right_fork);
-		ft_print_status(phil, "has taken a fork");
-		pthread_mutex_lock(&phil->left_fork);
-		ft_print_status(phil, "has taken a fork");
-		return (0);
-	}
+	return (EXIT_SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 17:03:11 by malee             #+#    #+#             */
-/*   Updated: 2024/07/10 16:53:44 by malee            ###   ########.fr       */
+/*   Updated: 2024/10/29 19:56:12 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,74 +16,58 @@
 # include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
+# include <string.h>
 # include <sys/time.h>
 # include <unistd.h>
-# ifndef ERROR_CODE
-#  define ERROR_CODE 0
-# endif
-# ifndef SIZE_MAX
-#  define SIZE_MAX 2147483647
-# endif
+# define INT_SIZE_MAX 2147483647
 
-typedef struct s_phil
+typedef struct s_philo	t_philo;
+typedef struct s_table	t_table;
+
+typedef struct s_philo
 {
-	ssize_t			id;
-	struct s_phil	*next_phil;
-	pthread_mutex_t	left_fork;
-	pthread_mutex_t	*right_fork;
-	pthread_mutex_t	set_time_last_eaten;
-	ssize_t			time_last_eaten;
-	pthread_mutex_t	set_meals_eaten;
-	ssize_t			meals_eaten;
-	pthread_mutex_t	set_is_eating;
-	int				is_eating;
-	pthread_t		thread;
-	struct s_rules	*rules;
-}					t_phil;
+	long long			id;
+	long long			meals_eaten;
+	long long			last_meal_time;
+	pthread_t			thread;
+	pthread_mutex_t		*left_fork;
+	pthread_mutex_t		*right_fork;
+	t_table				*table;
+}						t_philo;
 
-typedef struct s_rules
+typedef struct s_table
 {
-	ssize_t			num_of_phils;
-	ssize_t			time_to_die;
-	ssize_t			time_to_eat;
-	ssize_t			time_to_sleep;
-	ssize_t			max_meals;
-	ssize_t			start_time;
-	pthread_mutex_t	set_dead_phil;
-	int				dead_phil;
-	pthread_mutex_t	is_printing;
-}					t_rules;
+	long long			num_philos;
+	long long			time_to_die;
+	long long			time_to_eat;
+	long long			time_to_sleep;
+	long long			meals_required;
+	long long			someone_died;
+	long long			start_time;
+	pthread_mutex_t		*forks;
+	pthread_mutex_t		write_mutex;
+	pthread_mutex_t		death_mutex;
+	t_philo				*philosophers;
+}						t_table;
 
-// Utils
-ssize_t				ft_atol(char *str);
-int					ft_isdigit(char *str);
-void				ft_error(void);
-ssize_t				ft_get_time(void);
-void				*ft_calloc(ssize_t nmemb, ssize_t size);
+/* SIMULATION */
+int						ft_start_simulation(t_table **table);
 
-// Init_Utils
-t_phil				*ft_init_table(char **args);
-t_phil				*ft_init_phils(t_rules *rules, ssize_t start);
-t_rules				*ft_init_rules(char **args);
-void				ft_clear_tables(t_phil *phils);
+/* ROUTINES */
+void					*ft_philosopher_routine(void *arg);
+void					ft_reaper_routine(t_table **table);
+void					ft_eat(t_philo **philo);
 
-// routines
-void				*ft_reaper(void *arg);
-void				ft_mise_en_place(t_phil *phils);
-void				*ft_phil_routine(void *arg);
-void				ft_think_eat(t_phil *phil);
+/* LIBFT UTILS */
+void					*ft_calloc(ssize_t nmemb, ssize_t size);
+long long				ft_atol(char *str);
+int						ft_isdigit(char *str);
 
-// routine utils
-void				ft_set_eat(t_phil *phil, int flag);
-int					ft_get_eat(t_phil *phil);
-void				ft_set_death(t_phil *phil, int flag);
-int					ft_get_death(t_phil *phil);
-ssize_t				ft_get_time_last_eaten(t_phil *phil);
-void				ft_set_time_last_eaten(t_phil *phil);
-void				ft_print_status(t_phil *phil, char *status);
-int					ft_fork_order(t_phil *phil);
-void				ft_set_meals_eaten(t_phil *phils);
-ssize_t				ft_get_meals_eaten(t_phil *phils);
-int					ft_fullness(t_phil *phil);
+/* UTILITIES */
+int						ft_init_mutexes(t_table **table);
+int						ft_init_philos(t_table **table);
+long long				ft_get_time(void);
+int						ft_check_death(t_philo **philo);
+void					ft_print_status(t_philo *philo, char *status);
 
 #endif
