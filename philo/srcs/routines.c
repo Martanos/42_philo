@@ -6,11 +6,40 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 17:53:58 by malee             #+#    #+#             */
-/*   Updated: 2024/10/29 22:00:34 by malee            ###   ########.fr       */
+/*   Updated: 2024/10/30 02:43:54 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philo.h>
+
+static void	ft_eat(t_philo **philo)
+{
+	long long	start_eat_time;
+
+	pthread_mutex_lock((*philo)->left_fork);
+	ft_print_status(philo, "has taken a fork");
+	pthread_mutex_lock((*philo)->right_fork);
+	ft_print_status(philo, "has taken a fork");
+	start_eat_time = ft_get_time();
+	ft_print_status(philo, "is eating");
+	(*philo)->last_meal_time = ft_get_time();
+	(*philo)->meals_eaten++;
+	while (ft_get_time() - start_eat_time < (*philo)->table->time_to_eat)
+		usleep(500);
+	pthread_mutex_unlock((*philo)->left_fork);
+	pthread_mutex_unlock((*philo)->right_fork);
+}
+
+static void	ft_think_sleep(t_philo **philo)
+{
+	long long	start_sleep_time;
+
+	ft_print_status(philo, "is sleeping");
+	start_sleep_time = ft_get_time();
+	while (ft_get_time() - start_sleep_time < (*philo)->table->time_to_sleep)
+		usleep(500);
+	ft_print_status(philo, "is thinking");
+}
 
 void	*ft_philosopher_routine(void *arg)
 {
@@ -31,6 +60,7 @@ void	*ft_philosopher_routine(void *arg)
 		if (died)
 			break ;
 		ft_eat(&philo);
+		ft_think_sleep(&philo);
 		if (philo->table->meals_required > 0
 			&& philo->meals_eaten == philo->table->meals_required)
 			break ;
@@ -61,35 +91,6 @@ void	ft_reaper_routine(t_table **table)
 		}
 		usleep(100);
 	}
-}
-
-static void	ft_eat(t_philo **philo)
-{
-	long long	start_eat_time;
-
-	pthread_mutex_lock((*philo)->left_fork);
-	ft_print_status(philo, "has taken a fork");
-	pthread_mutex_lock((*philo)->right_fork);
-	ft_print_status(philo, "has taken a fork");
-	start_eat_time = ft_get_time();
-	ft_print_status(philo, "is eating");
-	(*philo)->last_meal_time = ft_get_time();
-	(*philo)->meals_eaten++;
-	while (ft_get_time() - start_eat_time < (*philo)->table->time_to_eat)
-		usleep(500);
-	pthread_mutex_unlock((*philo)->left_fork);
-	pthread_mutex_unlock((*philo)->right_fork);
-}
-
-static void	ft_think_sleep(t_philo **philo)
-{
-	long long	start_sleep_time;
-
-	ft_print_status(philo, "is sleeping");
-	start_sleep_time = ft_get_time();
-	while (ft_get_time() - start_sleep_time < (*philo)->table->time_to_sleep)
-		usleep(500);
-	ft_print_status(philo, "is thinking");
 }
 
 int	ft_check_death(t_philo **philo)
