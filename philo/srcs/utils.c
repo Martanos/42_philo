@@ -6,46 +6,43 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 17:27:37 by malee             #+#    #+#             */
-/*   Updated: 2024/10/29 20:50:38 by malee            ###   ########.fr       */
+/*   Updated: 2024/10/30 07:27:56 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philo.h>
 
-long long	ft_atol(char *str)
+ssize_t	ft_atoi_strict(char *str)
 {
-	long long	result;
+	ssize_t	result;
+	int		i;
 
 	result = 0;
-	if (!str)
-		return (-1);
-	while (*str && ((*str == 32) || (*str >= 7 && *str <= 13)))
-		str++;
-	if (*str && (*str == '-' || *str == '+'))
-		return (-1);
-	while (*str && *str >= '0' && *str <= '9')
+	i = 0;
+	while (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13))
+		i++;
+	if (str[i] == '-' || str[i] == '+')
 	{
-		result = (result * 10) + (*str - '0');
-		str++;
+		if (str[i] == '-')
+			return (-1);
+		i++;
+	}
+	while (str[i])
+	{
+		if (str[i] < '0' || str[i] > '9')
+			return (-1);
+		result = result * 10 + (str[i] - '0');
+		if (result > INT_MAX)
+			return (-1);
+		i++;
 	}
 	return (result);
 }
 
-int	ft_isdigit(char *str)
-{
-	while (*str)
-	{
-		if (!(*str >= '0' && *str <= '9'))
-			return (1);
-		str++;
-	}
-	return (0);
-}
-
-void	*ft_calloc(ssize_t nmemb, ssize_t size)
+void	*ft_calloc(size_t nmemb, size_t size)
 {
 	char	*arr;
-	ssize_t	n;
+	size_t	n;
 
 	arr = malloc(nmemb * size);
 	if (!arr)
@@ -57,20 +54,42 @@ void	*ft_calloc(ssize_t nmemb, ssize_t size)
 	return ((void *)arr);
 }
 
-long long	ft_get_time(void)
+ssize_t	ft_get_time(void)
 {
 	struct timeval	tv;
 
 	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+	return ((tv.tv_sec * (ssize_t)1000) + (tv.tv_usec / 1000));
 }
 
-void	ft_print_status(t_philo **philo, char *status)
+void	ft_precise_usleep(ssize_t time)
 {
-	long long	time;
+	ssize_t	start;
 
-	pthread_mutex_lock(&(*philo)->table->write_mutex);
-	time = ft_get_time() - (*philo)->table->start_time;
-	printf("%lld %lld %s\n", time, (*philo)->id, status);
-	pthread_mutex_unlock(&(*philo)->table->write_mutex);
+	start = ft_get_time();
+	while ((ft_get_time() - start) < time)
+		usleep(time / 10);
+}
+
+void	ft_print_status(char *str, t_philo *philo)
+{
+	ssize_t	time;
+
+	pthread_mutex_lock(&philo->table->lock);
+	if (philo->table->dead && ft_strcmp(DIED, str) != 0)
+	{
+		pthread_mutex_unlock(&philo->table->lock);
+		return ;
+	}
+	pthread_mutex_lock(&philo->table->write);
+	time = ft_get_time() - philo->table->start_time;
+	if (ft_strcmp(DIED, str) == 0)
+	{
+		printf("%ld %ld %s\n", time, philo->philo_id, str);
+		philo->table->dead = 1;
+	}
+	else
+		printf("%ld %ld %s\n", time, philo->philo_id, str);
+	pthread_mutex_unlock(&philo->table->write);
+	pthread_mutex_unlock(&philo->table->lock);
 }

@@ -6,51 +6,95 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 18:01:28 by malee             #+#    #+#             */
-/*   Updated: 2024/10/29 21:54:37 by malee            ###   ########.fr       */
+/*   Updated: 2024/10/30 07:33:01 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philo.h>
 
-int	ft_init_mutexes(t_table **table)
+int	ft_init_table(t_table *table)
 {
-	int	i;
-
-	(*table)->forks = ft_calloc((*table)->num_philos, sizeof(pthread_mutex_t));
-	if (!(*table)->forks)
-		return (EXIT_FAILURE);
-	i = 0;
-	while (i < (*table)->num_philos)
-	{
-		if (pthread_mutex_init(&(*table)->forks[i], NULL))
-			return (EXIT_FAILURE);
-		i++;
-	}
-	if (pthread_mutex_init(&(*table)->write_mutex, NULL))
-		return (EXIT_FAILURE);
-	if (pthread_mutex_init(&(*table)->death_mutex, NULL))
-		return (EXIT_FAILURE);
-	return (EXIT_SUCCESS);
+	table->thread_id = ft_calloc(table->philo_num, sizeof(pthread_t));
+	if (!table->thread_id)
+		return (ft_error(ALLOC_ERR_THREAD, table));
+	table->forks = ft_calloc(table->philo_num, sizeof(pthread_mutex_t));
+	if (!table->forks)
+		return (ft_error(ALLOC_ERR_PHILO, table));
+	table->philos = ft_calloc(table->philo_num, sizeof(t_philo));
+	if (!table->philos)
+		return (ft_error(ALLOC_ERR_PHILO, table));
+	return (0);
 }
 
-int	ft_init_philos(t_table **table)
+int	ft_init_forks(t_table *table)
 {
-	int	i;
+	ssize_t	i;
 
-	(*table)->philosophers = ft_calloc((*table)->num_philos, sizeof(t_philo));
-	if (!(*table)->philosophers)
-		return (EXIT_FAILURE);
 	i = 0;
-	while (i < (*table)->num_philos)
+	while (i < table->philo_num)
 	{
-		(*table)->philosophers[i].id = i + 1;
-		(*table)->philosophers[i].meals_eaten = 0;
-		(*table)->philosophers[i].last_meal_time = ft_get_time();
-		(*table)->philosophers[i].table = *table;
-		(*table)->philosophers[i].left_fork = &(*table)->forks[i];
-		(*table)->philosophers[i].right_fork = &(*table)->forks[(i + 1)
-			% (*table)->num_philos];
+		pthread_mutex_init(&table->forks[i], NULL);
 		i++;
 	}
-	return (EXIT_SUCCESS);
+	i = 0;
+	table->philos[0].left_fork = &table->forks[0];
+	table->philos[0].right_fork = &table->forks[table->philo_num - 1];
+	i = 1;
+	while (i < table->philo_num)
+	{
+		table->philos[i].left_fork = &table->forks[i];
+		table->philos[i].right_fork = &table->forks[i - 1];
+		i++;
+	}
+	return (0);
+}
+
+void	ft_init_philos(t_table *table)
+{
+	ssize_t	i;
+
+	i = 0;
+	while (i < table->philo_num)
+	{
+		table->philos[i].table = table;
+		table->philos[i].philo_id = i + 1;
+		table->philos[i].time_to_die = table->death_time;
+		table->philos[i].eat_cont = 0;
+		table->philos[i].eating = 0;
+		table->philos[i].status = 0;
+		pthread_mutex_init(&table->philos[i].lock, NULL);
+		i++;
+	}
+}
+
+int	ft_init_data(t_table *table, char **argv, int argc)
+{
+	table->philo_num = ft_atoi_strict(argv[1]);
+	table->death_time = ft_atoi_strict(argv[2]);
+	table->eat_time = ft_atoi_strict(argv[3]);
+	table->sleep_time = ft_atoi_strict(argv[4]);
+	if (argc == 6)
+		table->meals_num = ft_atoi_strict(argv[5]);
+	else
+		table->meals_num = -1;
+	if (table->philo_num <= 0 || table->philo_num > 200 || table->death_time < 0
+		|| table->eat_time < 0 || table->sleep_time < 0)
+		return (ft_error("Invalid input", NULL));
+	table->dead = 0;
+	table->finished = 0;
+	pthread_mutex_init(&table->write, NULL);
+	pthread_mutex_init(&table->lock, NULL);
+	return (0);
+}
+
+int	ft_init(t_table *table, char **argv, int argc)
+{
+	if (ft_init_data(table, argv, argc))
+		return (1);
+	if (ft_init_table(table))
+		return (1);
+	if (ft_init_forks(table))
+		return (1);
+	ft_init_philos(table);
+	return (0);
 }
