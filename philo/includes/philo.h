@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 17:03:11 by malee             #+#    #+#             */
-/*   Updated: 2024/10/30 08:18:02 by malee            ###   ########.fr       */
+/*   Updated: 2024/10/30 15:48:38 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,10 @@ typedef struct s_table
 	ssize_t				eat_time;
 	ssize_t				sleep_time;
 	ssize_t				start_time;
+	ssize_t				all_threads_ready;
+	ssize_t				philo_count_ready;
 	pthread_mutex_t		*forks;
+	pthread_mutex_t		start_lock;
 	pthread_mutex_t		lock;
 	pthread_mutex_t		write;
 }						t_table;

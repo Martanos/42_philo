@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 17:27:37 by malee             #+#    #+#             */
-/*   Updated: 2024/10/30 08:34:40 by malee            ###   ########.fr       */
+/*   Updated: 2024/10/30 16:06:24 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,21 @@ ssize_t	ft_get_time(void)
 void	ft_precise_usleep(ssize_t time)
 {
 	ssize_t	start;
+	ssize_t	elapsed;
+	ssize_t	remain;
 
 	start = ft_get_time();
-	while ((ft_get_time() - start) < time)
-		usleep(time / 10);
+	while (1)
+	{
+		elapsed = ft_get_time() - start;
+		if (elapsed >= time)
+			break ;
+		remain = time - elapsed;
+		if (remain > 50)
+			usleep(50);
+		else
+			usleep(remain);
+	}
 }
 
 void	ft_print_status(char *str, t_philo *philo)
