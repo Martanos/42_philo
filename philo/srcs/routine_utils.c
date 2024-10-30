@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 06:20:24 by malee             #+#    #+#             */
-/*   Updated: 2024/10/30 07:47:28 by malee            ###   ########.fr       */
+/*   Updated: 2024/10/30 09:27:39 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,44 @@
 
 void	ft_take_forks(t_philo *philo)
 {
-	pthread_mutex_lock(philo->right_fork);
-	ft_print_status(TAKE_FORK, philo);
-	pthread_mutex_lock(philo->left_fork);
-	ft_print_status(TAKE_FORK, philo);
+	int	left_fork;
+	int	right_fork;
+
+	left_fork = philo->philo_id - 1;
+	right_fork = philo->philo_id % philo->table->philo_num;
+	if (philo->philo_id % 2 == 0)
+	{
+		pthread_mutex_lock(&philo->table->forks[right_fork]);
+		ft_print_status("has taken a fork", philo);
+		pthread_mutex_lock(&philo->table->forks[left_fork]);
+		ft_print_status("has taken a fork", philo);
+	}
+	else
+	{
+		pthread_mutex_lock(&philo->table->forks[left_fork]);
+		ft_print_status("has taken a fork", philo);
+		pthread_mutex_lock(&philo->table->forks[right_fork]);
+		ft_print_status("has taken a fork", philo);
+	}
 }
 
 void	ft_drop_forks(t_philo *philo)
 {
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
-	ft_print_status(SLEEPING, philo);
-	ft_precise_usleep(philo->table->sleep_time);
+	int	left_fork;
+	int	right_fork;
+
+	left_fork = philo->philo_id - 1;
+	right_fork = philo->philo_id % philo->table->philo_num;
+	if (philo->philo_id % 2 == 0)
+	{
+		pthread_mutex_unlock(&philo->table->forks[left_fork]);
+		pthread_mutex_unlock(&philo->table->forks[right_fork]);
+	}
+	else
+	{
+		pthread_mutex_unlock(&philo->table->forks[right_fork]);
+		pthread_mutex_unlock(&philo->table->forks[left_fork]);
+	}
 }
 
 void	ft_eat(t_philo *philo)
@@ -40,4 +66,6 @@ void	ft_eat(t_philo *philo)
 	philo->eating = 0;
 	pthread_mutex_unlock(&philo->lock);
 	ft_drop_forks(philo);
+	ft_print_status(SLEEPING, philo);
+	ft_precise_usleep(philo->table->sleep_time);
 }
