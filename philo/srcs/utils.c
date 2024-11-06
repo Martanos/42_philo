@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 17:27:37 by malee             #+#    #+#             */
-/*   Updated: 2024/11/06 07:38:02 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/06 09:29:03 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,4 +61,33 @@ int64_t	ft_get_time(void)
 	if (gettimeofday(&tv, NULL) == -1)
 		return (-1);
 	return ((tv.tv_sec * (int64_t)1000) + (tv.tv_usec / 1000));
+}
+
+int	ft_str_cmp(char *s1, char *s2)
+{
+	while (*s1 && *s2)
+	{
+		if (*s1 != *s2)
+			return (EXIT_FAILURE);
+		s1++;
+		s2++;
+	}
+	if (*s1 == *s2)
+		return (EXIT_SUCCESS);
+	return (EXIT_FAILURE);
+}
+
+void	ft_precise_sleep(int64_t time_in_ms)
+{
+	int64_t	start;
+	int64_t	elapsed;
+
+	start = ft_get_time();
+	while (1)
+	{
+		elapsed = ft_get_time() - start;
+		if (elapsed >= time_in_ms)
+			break ;
+		usleep(100);
+	}
 }
