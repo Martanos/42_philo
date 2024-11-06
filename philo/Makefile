@@ -1,6 +1,6 @@
 NAME = philo
 INCLUDE_DIR = includes
-CFILES = main.c init_utils.c routines.c routine_utils.c utils.c utils2.c
+CFILES = main.c init_utils.c routines.c routine_utils.c utils.c utils2.c monitor.c
 SRC_DIR = srcs
 SRCS = $(addprefix $(SRC_DIR)/,$(CFILES))
 CC = cc
@@ -8,8 +8,8 @@ CC = cc
 # Compiler flags
 CFLAGS = -Wall -Wextra -Werror -g
 TSAN_FLAGS = -fsanitize=thread
-DRD_FLAGS = 
-HELGRIND_FLAGS = 
+DRD_FLAGS =
+HELGRIND_FLAGS =
 
 # Directories
 OBJ_DIR = ./obj
@@ -84,7 +84,7 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.c
 	@$(CC) $(CFLAGS) $(addprefix -I,$(INCLUDE_DIR)) -c $< -o $@
 
 # Create test scripts
-setup_tests: 
+setup_tests:
 	@mkdir -p $(TEST_DIR)
 	@echo '#!/bin/bash\n\
 	NAME=$$1\n\
@@ -96,7 +96,7 @@ setup_tests:
 	./$$NAME 4 410 200 200 > $$OUTPUT_DIR/even.txt\n\
 	# Odd philosophers test\n\
 	./$$NAME 5 410 200 200 > $$OUTPUT_DIR/odd.txt' > $(TEST_DIR)/basic_test.sh
-	
+
 	@echo '#!/bin/bash\n\
 	NAME=$$1\n\
 	OUTPUT_DIR=$$2\n\
@@ -107,7 +107,7 @@ setup_tests:
 	./$$NAME 4 410 200 200 5 > $$OUTPUT_DIR/race2.txt\n\
 	# Quick succession test\n\
 	./$$NAME 4 200 100 100 > $$OUTPUT_DIR/race3.txt' > $(TEST_DIR)/race_test.sh
-	
+
 	@echo '#!/bin/bash\n\
 	NAME=$$1\n\
 	OUTPUT_DIR=$$2\n\
@@ -118,7 +118,7 @@ setup_tests:
 	./$$NAME 200 60000 60000 60000 1 > $$OUTPUT_DIR/stress2.txt\n\
 	# Minimum values test\n\
 	./$$NAME 2 60 60 60 1 > $$OUTPUT_DIR/stress3.txt' > $(TEST_DIR)/stress_test.sh
-	
+
 	@chmod +x $(TEST_DIR)/*.sh
 	@echo "$(GREEN)Test scripts created successfully.$(RESET)"
 

@@ -6,13 +6,13 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 17:02:59 by malee             #+#    #+#             */
-/*   Updated: 2024/10/30 15:40:51 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/06 07:22:04 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	ft_input_checker(char **argv)
+static int	ft_input_checker(char **argv)
 {
 	int	i;
 	int	j;
@@ -29,41 +29,26 @@ int	ft_input_checker(char **argv)
 				continue ;
 			}
 			if ((argv[i][j] < 48 || argv[i][j] > 57))
-				return (ft_error("Invalid input", NULL));
+				return (EXIT_FAILURE);
 			j++;
 		}
 		i++;
 	}
-	return (0);
-}
-
-int	ft_case_one(t_table *table)
-{
-	table->start_time = ft_get_time();
-	if (pthread_create(&table->thread_id[0], NULL, &ft_routine,
-			&table->philos[0]))
-		return (ft_error(ERR_THREAD_CREATE, table));
-	pthread_detach(table->thread_id[0]);
-	while (table->dead == 0)
-		ft_precise_usleep(0);
-	ft_exit(table);
-	return (0);
+	return (EXIT_SUCCESS);
 }
 
 int	main(int argc, char **argv)
 {
-	t_table	table;
+	t_data	*data;
 
+	data = NULL;
 	if (argc < 5 || argc > 6)
-		return (1);
-	if (ft_input_checker(argv))
-		return (1);
-	if (ft_init(&table, argv, argc))
-		return (1);
-	if (table.philo_num == 1)
-		return (ft_case_one(&table));
-	if (ft_thread_init(&table))
-		return (1);
-	ft_exit(&table);
+		return (printf("Invalid number of arguments\n"), EXIT_FAILURE);
+	if (ft_input_checker(argv) == EXIT_FAILURE)
+		return (printf("Invalid input\n"), EXIT_FAILURE);
+	if (ft_init(&data, argv, argc) == EXIT_FAILURE)
+		return (printf("Invalid input\n"), EXIT_FAILURE);
+	ft_routine_loop(&data);
+	ft_clear_data(&data);
 	return (0);
 }

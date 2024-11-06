@@ -6,92 +6,98 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 18:01:28 by malee             #+#    #+#             */
-/*   Updated: 2024/10/30 09:04:19 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/06 07:51:04 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philo.h>
 
-int	ft_init_table(t_table *table)
+static void	ft_init_forks(t_data **data)
 {
-	table->thread_id = ft_calloc(table->philo_num, sizeof(pthread_t));
-	if (!table->thread_id)
-		return (ft_error(ALLOC_ERR_THREAD, table));
-	table->forks = ft_calloc(table->philo_num, sizeof(pthread_mutex_t));
-	if (!table->forks)
-		return (ft_error(ALLOC_ERR_PHILO, table));
-	table->philos = ft_calloc(table->philo_num, sizeof(t_philo));
-	if (!table->philos)
-		return (ft_error(ALLOC_ERR_PHILO, table));
-	return (0);
+	int	i;
+	int	left;
+	int	right;
+
+	i = -1;
+	while (++i < (*data)->philo_count)
+	{
+		(*data)->forks[i].id = i + 1;
+		(*data)->forks[i].mutex = ft_calloc(1, sizeof(pthread_mutex_t));
+		pthread_mutex_init((*data)->forks[i].mutex, NULL);
+	}
+	i = -1;
+	while (++i < (*data)->philo_count)
+	{
+		left = i;
+		right = (i + 1) % (*data)->philo_count;
+		if (left < right)
+		{
+			(*data)->philos[i].first_fork = &(*data)->forks[left];
+			(*data)->philos[i].second_fork = &(*data)->forks[right];
+		}
+		else
+		{
+			(*data)->philos[i].first_fork = &(*data)->forks[right];
+			(*data)->philos[i].second_fork = &(*data)->forks[left];
+		}
+	}
 }
 
-int	ft_init_forks(t_table *table)
+static int	ft_init_philos(t_data **data, int i, char **argv, int argc)
+{
+	(*data)->philos[i].data = *data;
+	(*data)->philos[i].id = i + 1;
+	(*data)->philos[i].time_to_die = ft_atoi_strict(argv[2]);
+	if ((*data)->philos[i].time_to_die <= 0)
+		return (EXIT_FAILURE);
+	(*data)->philos[i].time_to_eat = ft_atoi_strict(argv[3]);
+	if ((*data)->philos[i].time_to_eat <= 0)
+		return (EXIT_FAILURE);
+	(*data)->philos[i].time_to_sleep = ft_atoi_strict(argv[4]);
+	if ((*data)->philos[i].time_to_sleep <= 0)
+		return (EXIT_FAILURE);
+	if (argc == 6)
+	{
+		(*data)->philos[i].meals_required = ft_atoi_strict(argv[5]);
+		if ((*data)->philos[i].meals_required < 0)
+			return (EXIT_FAILURE);
+		else if ((*data)->philos[i].meals_required == 0)
+			(*data)->philos[i].meals_required = -1;
+	}
+	(*data)->philos[i].meals_mutex = ft_calloc(1, sizeof(pthread_mutex_t));
+	pthread_mutex_init((*data)->philos[i].meals_mutex, NULL);
+	(*data)->philos[i].meal_time_mutex = ft_calloc(1, sizeof(pthread_mutex_t));
+	pthread_mutex_init((*data)->philos[i].meal_time_mutex, NULL);
+	(*data)->philos[i].dead_mutex = ft_calloc(1, sizeof(pthread_mutex_t));
+	pthread_mutex_init((*data)->philos[i].dead_mutex, NULL);
+	return (EXIT_SUCCESS);
+}
+
+static int	ft_init_data(t_data **data, char **argv, int argc)
 {
 	int	i;
 
 	i = -1;
-	while (++i < table->philo_num)
-		pthread_mutex_init(&table->forks[i], NULL);
-	i = 0;
-	table->philos[0].left_fork = &table->forks[0];
-	table->philos[0].right_fork = &table->forks[table->philo_num - 1];
-	i = 1;
-	while (i < table->philo_num)
-	{
-		table->philos[i].left_fork = &table->forks[i];
-		table->philos[i].right_fork = &table->forks[i - 1];
-		i++;
-	}
-	return (0);
+	*data = ft_calloc(1, sizeof(t_data));
+	(*data)->philo_count = ft_atoi_strict(argv[1]);
+	if ((*data)->philo_count <= 0 || (*data)->philo_count > 200)
+		return (EXIT_FAILURE);
+	(*data)->philos = ft_calloc((*data)->philo_count, sizeof(t_philo));
+	(*data)->forks = ft_calloc((*data)->philo_count, sizeof(t_fork));
+	(*data)->death_mutex = ft_calloc(1, sizeof(pthread_mutex_t));
+	pthread_mutex_init((*data)->death_mutex, NULL);
+	while (++i < (*data)->philo_count)
+		if (ft_init_philos(data, i, argv, argc) == EXIT_FAILURE)
+			return (EXIT_FAILURE);
+	ft_init_forks(data);
+	(*data)->print_mutex = ft_calloc(1, sizeof(pthread_mutex_t));
+	pthread_mutex_init((*data)->print_mutex, NULL);
+	return (EXIT_SUCCESS);
 }
 
-void	ft_init_philos(t_table *table)
+int	ft_init(t_data **data, char **argv, int argc)
 {
-	ssize_t	i;
-
-	i = 0;
-	while (i < table->philo_num)
-	{
-		table->philos[i].table = table;
-		table->philos[i].philo_id = i + 1;
-		table->philos[i].time_to_die = table->death_time;
-		table->philos[i].eat_cont = 0;
-		table->philos[i].eating = 0;
-		table->philos[i].status = 0;
-		pthread_mutex_init(&table->philos[i].lock, NULL);
-		i++;
-	}
-}
-
-int	ft_init_data(t_table *table, char **argv, int argc)
-{
-	table->philo_num = ft_atoi_strict(argv[1]);
-	table->death_time = ft_atoi_strict(argv[2]);
-	table->eat_time = ft_atoi_strict(argv[3]);
-	table->sleep_time = ft_atoi_strict(argv[4]);
-	if (argc == 6)
-		table->meals_num = ft_atoi_strict(argv[5]);
-	else
-		table->meals_num = -1;
-	if (table->philo_num <= 0 || table->philo_num > 200 || table->death_time < 0
-		|| table->eat_time < 0 || table->sleep_time < 0)
-		return (ft_error("Invalid input", NULL));
-	table->dead = 0;
-	table->finished = 0;
-	pthread_mutex_init(&table->write, NULL);
-	pthread_mutex_init(&table->lock, NULL);
-	return (0);
-}
-
-int	ft_init(t_table *table, char **argv, int argc)
-{
-	if (ft_init_data(table, argv, argc))
-		return (1);
-	if (ft_init_table(table))
-		return (1);
-	if (ft_init_forks(table))
-		return (1);
-	ft_init_philos(table);
-	return (0);
+	if (ft_init_data(data, argv, argc) == EXIT_FAILURE)
+		return (ft_clear_data(data), EXIT_FAILURE);
+	return (EXIT_SUCCESS);
 }

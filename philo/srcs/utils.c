@@ -6,15 +6,15 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 17:27:37 by malee             #+#    #+#             */
-/*   Updated: 2024/10/30 16:06:24 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/06 07:38:02 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philo.h>
 
-ssize_t	ft_atoi_strict(char *str)
+int64_t	ft_atoi_strict(char *str)
 {
-	ssize_t	result;
+	int64_t	result;
 	int		i;
 
 	result = 0;
@@ -39,10 +39,10 @@ ssize_t	ft_atoi_strict(char *str)
 	return (result);
 }
 
-void	*ft_calloc(size_t nmemb, size_t size)
+void	*ft_calloc(int64_t nmemb, int64_t size)
 {
 	char	*arr;
-	size_t	n;
+	int64_t	n;
 
 	arr = malloc(nmemb * size);
 	if (!arr)
@@ -54,53 +54,11 @@ void	*ft_calloc(size_t nmemb, size_t size)
 	return ((void *)arr);
 }
 
-ssize_t	ft_get_time(void)
+int64_t	ft_get_time(void)
 {
 	struct timeval	tv;
 
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * (ssize_t)1000) + (tv.tv_usec / 1000));
-}
-
-void	ft_precise_usleep(ssize_t time)
-{
-	ssize_t	start;
-	ssize_t	elapsed;
-	ssize_t	remain;
-
-	start = ft_get_time();
-	while (1)
-	{
-		elapsed = ft_get_time() - start;
-		if (elapsed >= time)
-			break ;
-		remain = time - elapsed;
-		if (remain > 50)
-			usleep(50);
-		else
-			usleep(remain);
-	}
-}
-
-void	ft_print_status(char *str, t_philo *philo)
-{
-	ssize_t	time;
-
-	pthread_mutex_lock(&philo->table->lock);
-	if (philo->table->dead && ft_strcmp(DIED, str) != 0)
-	{
-		pthread_mutex_unlock(&philo->table->lock);
-		return ;
-	}
-	pthread_mutex_lock(&philo->table->write);
-	time = ft_get_time() - philo->table->start_time;
-	if (ft_strcmp(DIED, str) == 0)
-	{
-		printf("%ld %ld %s\n", time, philo->philo_id, str);
-		philo->table->dead = 1;
-	}
-	else
-		printf("%ld %ld %s\n", time, philo->philo_id, str);
-	pthread_mutex_unlock(&philo->table->write);
-	pthread_mutex_unlock(&philo->table->lock);
+	if (gettimeofday(&tv, NULL) == -1)
+		return (-1);
+	return ((tv.tv_sec * (int64_t)1000) + (tv.tv_usec / 1000));
 }

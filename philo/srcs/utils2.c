@@ -6,52 +6,35 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 06:14:33 by malee             #+#    #+#             */
-/*   Updated: 2024/10/30 08:17:27 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/06 07:59:08 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philo.h>
 
-void	ft_clear_data(t_table *table)
-{
-	if (table->thread_id)
-		free(table->thread_id);
-	if (table->forks)
-		free(table->forks);
-	if (table->philos)
-		free(table->philos);
-}
-
-void	ft_exit(t_table *table)
+void	ft_clear_data(t_data **data)
 {
 	int	i;
 
-	ft_precise_usleep(100);
 	i = -1;
-	while (++i < table->philo_num)
+	while (++i < (*data)->philo_count)
 	{
-		pthread_mutex_destroy(&table->forks[i]);
-		pthread_mutex_destroy(&table->philos[i].lock);
+		pthread_mutex_destroy((*data)->philos[i].dead_mutex);
+		pthread_mutex_destroy((*data)->philos[i].meal_time_mutex);
+		pthread_mutex_destroy((*data)->philos[i].meals_mutex);
+		free((*data)->philos[i].meals_mutex);
+		free((*data)->philos[i].meal_time_mutex);
+		free((*data)->philos[i].dead_mutex);
 	}
-	pthread_mutex_destroy(&table->write);
-	pthread_mutex_destroy(&table->lock);
-	ft_clear_data(table);
-}
-
-int	ft_error(char *str, t_table *table)
-{
-	printf("%s\n", str);
-	if (table)
-		ft_exit(table);
-	return (1);
-}
-
-int	ft_strcmp(char *s1, char *s2)
-{
-	while (*s1 != '\0' && (*s1 == *s2))
+	i = -1;
+	while (++i < (*data)->philo_count)
 	{
-		s1++;
-		s2++;
+		pthread_mutex_destroy((*data)->forks[i].mutex);
+		free((*data)->forks[i].mutex);
 	}
-	return (*(char *)s1 - *(char *)s2);
+	pthread_mutex_destroy((*data)->death_mutex);
+	free((*data)->death_mutex);
+	pthread_mutex_destroy((*data)->print_mutex);
+	free((*data)->print_mutex);
+	free(*data);
 }
