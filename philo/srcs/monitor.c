@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 15:47:50 by malee             #+#    #+#             */
-/*   Updated: 2024/11/17 22:29:38 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/18 01:03:39 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,7 @@ static unsigned char	ft_check_death(t_monitor *monitor, int i)
 
 	current_time = ft_get_time();
 	pthread_mutex_lock(&monitor->philos[i].meal_data_mutex);
-	if (monitor->philos[i].last_meal_time
-		+ monitor->time_to_die <= current_time)
+	if (monitor->philos[i].last_meal_time + monitor->time_to_die < current_time)
 	{
 		pthread_mutex_unlock(&monitor->philos[i].meal_data_mutex);
 		pthread_mutex_lock(&monitor->simulation_ended_mutex);

@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 09:42:39 by malee             #+#    #+#             */
-/*   Updated: 2024/11/17 22:29:37 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/18 00:46:18 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ static unsigned char	ft_le_customers(t_monitor **monitor)
 		pthread_mutex_init(&(*monitor)->philos[id].full_mutex, NULL);
 		pthread_mutex_init(&(*monitor)->philos[id].owned_fork->fork_mutex,
 			NULL);
+		pthread_mutex_init(&(*monitor)->philos[id].ready_mutex, NULL);
 	}
 	return (EXIT_SUCCESS);
 }
@@ -77,6 +78,7 @@ unsigned char	ft_mise_en_place(int argc, char **argv, t_monitor **monitor)
 	if (!*monitor)
 		return (printf("Failed to allocate memory for monitor\n"),
 			EXIT_FAILURE);
+	pthread_mutex_init(&(*monitor)->all_ready_mutex, NULL);
 	ft_le_monitor(argc, argv, monitor);
 	if (ft_le_customers(monitor) == EXIT_FAILURE)
 		return (EXIT_FAILURE);

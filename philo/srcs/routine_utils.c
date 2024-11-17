@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   routine_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malee <malee@student.42.fr>                +#+  +:+       +#+        */
+/*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 18:19:17 by malee             #+#    #+#             */
-/*   Updated: 2024/11/18 00:02:06 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/18 01:10:13 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philo.h>
 
+// TODO: Initial consumption is not synced properly need to look at fork logic
 static unsigned char	ft_take_own_fork(t_philo **philo, int64_t meals_eaten)
 {
 	while (1)
@@ -22,15 +23,13 @@ static unsigned char	ft_take_own_fork(t_philo **philo, int64_t meals_eaten)
 			pthread_mutex_unlock(&(*philo)->owned_fork->fork_mutex);
 			return (EXIT_FAILURE);
 		}
-		else if ((*philo)->owned_fork->owner_last_used_time
-			> (*philo)->owned_fork->partner_last_used_time)
+		else if ((*philo)->owned_fork->owner_last_used_time > (*philo)->owned_fork->partner_last_used_time)
 			pthread_mutex_unlock(&(*philo)->owned_fork->fork_mutex);
 		else
 		{
 			ft_print_message(philo, "has taken a fork");
 			break ;
 		}
-		usleep(100);
 	}
 	return (EXIT_SUCCESS);
 }
@@ -47,15 +46,13 @@ static unsigned char	ft_take_shared_fork(t_philo **philo,
 			pthread_mutex_unlock(&(*philo)->shared_fork->fork_mutex);
 			return (EXIT_FAILURE);
 		}
-		else if ((*philo)->shared_fork->partner_last_used_time
-			> (*philo)->shared_fork->owner_last_used_time)
+		else if ((*philo)->shared_fork->partner_last_used_time > (*philo)->shared_fork->owner_last_used_time)
 			pthread_mutex_unlock(&(*philo)->shared_fork->fork_mutex);
 		else
 		{
 			ft_print_message(philo, "has taken a fork");
 			break ;
 		}
-		usleep(100);
 	}
 	return (EXIT_SUCCESS);
 }

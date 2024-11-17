@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 09:27:55 by malee             #+#    #+#             */
-/*   Updated: 2024/11/18 00:27:31 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/18 00:56:06 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ typedef struct s_monitor
 	int						num_of_philos;
 	pthread_mutex_t			simulation_ended_mutex;
 	bool					simulation_ended;
+	pthread_mutex_t			all_ready_mutex;
 	pthread_mutex_t			print_mutex;
 	t_philo					*philos;
 	int64_t					start_time;
