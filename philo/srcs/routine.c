@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 12:20:31 by malee             #+#    #+#             */
-/*   Updated: 2024/11/18 01:17:19 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/18 01:18:15 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static unsigned char	ft_eat(t_philo **philo, int64_t *meals_eaten)
 // NOTE: Things to consider:
 // - Where to check for death
 // - End conditions: simulation end or full;
-void	*ft_philosopher_routine(void *arg)
+void	*ft_odd_routine(void *arg)
 {
 	t_philo	*philo;
 	int64_t	meals_eaten;
@@ -68,7 +68,7 @@ void	*ft_even_routine(void *arg)
 	pthread_mutex_unlock(&philo->ready_mutex);
 	pthread_mutex_lock(&philo->monitor->all_ready_mutex);
 	pthread_mutex_unlock(&philo->monitor->all_ready_mutex);
-	ft_print_message(philo, "is thinking");
+	ft_print_message(&philo, "is thinking");
 	ft_precise_sleep(philo->monitor->time_to_eat);
 	while (1)
 	{
