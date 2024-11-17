@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 18:19:17 by malee             #+#    #+#             */
-/*   Updated: 2024/11/17 22:31:18 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/17 22:37:21 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,11 @@ unsigned char	ft_check_end_conditions(t_philo **philo, int64_t meals_eaten)
 		pthread_mutex_unlock(&(*philo)->monitor->simulation_ended_mutex);
 	if ((*philo)->monitor->max_num_of_meals != -1
 		&& meals_eaten == (*philo)->monitor->max_num_of_meals)
+	{
+		pthread_mutex_lock(&(*philo)->full_mutex);
+		(*philo)->full = true;
+		pthread_mutex_unlock(&(*philo)->full_mutex);
 		return (EXIT_SUCCESS);
+	}
 	return (EXIT_FAILURE);
 }
