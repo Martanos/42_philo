@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 12:20:31 by malee             #+#    #+#             */
-/*   Updated: 2024/11/18 01:18:15 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/18 01:34:46 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	*ft_odd_routine(void *arg)
 	pthread_mutex_unlock(&philo->monitor->all_ready_mutex);
 	while (1)
 	{
+		ft_print_message(&philo, "is thinking");
 		if (ft_eat(&philo, &meals_eaten) == EXIT_FAILURE)
 			return (NULL);
 		if (ft_check_end_conditions(&philo, meals_eaten) == EXIT_SUCCESS)
@@ -52,7 +53,6 @@ void	*ft_odd_routine(void *arg)
 		ft_precise_sleep(philo->monitor->time_to_sleep);
 		if (ft_check_end_conditions(&philo, meals_eaten) == EXIT_SUCCESS)
 			return (NULL);
-		ft_print_message(&philo, "is thinking");
 	}
 }
 

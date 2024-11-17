@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 09:43:55 by malee             #+#    #+#             */
-/*   Updated: 2024/11/17 22:30:01 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/18 01:39:21 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,9 +89,11 @@ void	ft_print_message(t_philo **philo, char *message)
 	int64_t	relative_time;
 
 	pthread_mutex_lock(&(*philo)->monitor->simulation_ended_mutex);
-	if ((*philo)->monitor->simulation_ended == true
-		&& pthread_mutex_unlock(&(*philo)->monitor->simulation_ended_mutex))
+	if ((*philo)->monitor->simulation_ended == true)
+	{
+		pthread_mutex_unlock(&(*philo)->monitor->simulation_ended_mutex);
 		return ;
+	}
 	else
 		pthread_mutex_unlock(&(*philo)->monitor->simulation_ended_mutex);
 	current_time = ft_get_time();
