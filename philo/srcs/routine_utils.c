@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   routine_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
+/*   By: malee <malee@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 18:19:17 by malee             #+#    #+#             */
-/*   Updated: 2024/11/17 22:37:21 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/18 00:02:06 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ static unsigned char	ft_take_own_fork(t_philo **philo, int64_t meals_eaten)
 			pthread_mutex_unlock(&(*philo)->owned_fork->fork_mutex);
 			return (EXIT_FAILURE);
 		}
-		else if ((*philo)->owned_fork->owner_last_used_time > (*philo)->owned_fork->partner_last_used_time)
+		else if ((*philo)->owned_fork->owner_last_used_time
+			> (*philo)->owned_fork->partner_last_used_time)
 			pthread_mutex_unlock(&(*philo)->owned_fork->fork_mutex);
 		else
 		{
@@ -42,10 +43,12 @@ static unsigned char	ft_take_shared_fork(t_philo **philo,
 		pthread_mutex_lock(&(*philo)->shared_fork->fork_mutex);
 		if (ft_check_end_conditions(philo, meals_eaten) == EXIT_SUCCESS)
 		{
+			pthread_mutex_unlock(&(*philo)->owned_fork->fork_mutex);
 			pthread_mutex_unlock(&(*philo)->shared_fork->fork_mutex);
 			return (EXIT_FAILURE);
 		}
-		else if ((*philo)->shared_fork->partner_last_used_time > (*philo)->shared_fork->owner_last_used_time)
+		else if ((*philo)->shared_fork->partner_last_used_time
+			> (*philo)->shared_fork->owner_last_used_time)
 			pthread_mutex_unlock(&(*philo)->shared_fork->fork_mutex);
 		else
 		{

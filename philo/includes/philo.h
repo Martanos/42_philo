@@ -6,7 +6,7 @@
 /*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 09:27:55 by malee             #+#    #+#             */
-/*   Updated: 2024/11/17 22:44:59 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/18 00:27:31 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,12 @@ typedef struct s_philo
 	pthread_t				thread;
 	t_fork					*owned_fork;
 	t_fork					*shared_fork;
-	pthread_mutex_t			meal_data_mutex;
 	pthread_mutex_t			full_mutex;
 	bool					full;
+	pthread_mutex_t			meal_data_mutex;
 	int64_t					last_meal_time;
+	pthread_mutex_t			ready_mutex;
+	bool					ready;
 }							t_philo;
 
 typedef struct s_monitor

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cleanup.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
+/*   By: malee <malee@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 11:51:36 by malee             #+#    #+#             */
-/*   Updated: 2024/11/17 22:29:35 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/17 23:51:31 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ static void	ft_free_philos(t_monitor **monitor)
 	{
 		pthread_mutex_destroy(&(*monitor)->philos[id].meal_data_mutex);
 		pthread_mutex_destroy(&(*monitor)->philos[id].owned_fork->fork_mutex);
+		pthread_mutex_destroy(&(*monitor)->philos[id].full_mutex);
 		free((*monitor)->philos[id].owned_fork);
 	}
 	free((*monitor)->philos);
@@ -29,10 +30,9 @@ static void	ft_free_philos(t_monitor **monitor)
 // NOTE: This function is used to clean up the memory allocated for the monitor
 unsigned char	ft_cleanup(t_monitor **monitor)
 {
-	if (&(*monitor)->simulation_ended_mutex)
-		pthread_mutex_destroy(&(*monitor)->simulation_ended_mutex);
-	if (&(*monitor)->print_mutex)
-		pthread_mutex_destroy(&(*monitor)->print_mutex);
+	pthread_mutex_destroy(&(*monitor)->simulation_ended_mutex);
+	pthread_mutex_destroy(&(*monitor)->print_mutex);
 	ft_free_philos(monitor);
+	free(*monitor);
 	return (EXIT_SUCCESS);
 }

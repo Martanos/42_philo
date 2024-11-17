@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   routine.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+        */
+/*   By: malee <malee@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 12:20:31 by malee             #+#    #+#             */
-/*   Updated: 2024/11/17 22:29:40 by malee            ###   ########.fr       */
+/*   Updated: 2024/11/17 23:59:21 by malee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ static unsigned char	ft_eat(t_philo **philo, int64_t *meals_eaten)
 {
 	if (ft_take_forks(philo, *meals_eaten) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
-	pthread_mutex_lock(&(*philo)->monitor->simulation_ended_mutex);
+	pthread_mutex_lock(&(*philo)->meal_data_mutex);
 	(*philo)->last_meal_time = ft_get_time();
-	pthread_mutex_unlock(&(*philo)->monitor->simulation_ended_mutex);
+	pthread_mutex_unlock(&(*philo)->meal_data_mutex);
 	ft_print_message(philo, "is eating");
 	(*meals_eaten)++;
 	ft_precise_sleep((*philo)->monitor->time_to_eat);

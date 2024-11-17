@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: malee <malee@student.42singapore.sg>       +#+  +:+       +#+         #
+#    By: malee <malee@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/13 09:23:00 by malee             #+#    #+#              #
-#    Updated: 2024/11/17 19:29:31 by malee            ###   ########.fr        #
+#    Updated: 2024/11/18 00:11:31 by malee            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ OBJS = $(addprefix $(OBJ_DIR)/,$(CFILES:.c=.o))
 OBJ_DIR = ./obj
 CC = cc
 INCLUDE_DIR = ./includes
-CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address -I$(INCLUDE_DIR)
+CFLAGS = -Wall -Wextra -Werror -g -I$(INCLUDE_DIR)
 
 # Colors
 GREEN = \033[0;32m
